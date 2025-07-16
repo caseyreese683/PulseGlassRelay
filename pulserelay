@@ -1,0 +1,19 @@
+
+---
+
+### 🐍 `pulserelay/relay_server.py`
+```python
+from fastapi import FastAPI, Request
+from reflector import forward_and_reflect
+import uvicorn
+
+app = FastAPI()
+
+@app.post("/{path:path}")
+async def relay(path: str, request: Request):
+    body = await request.body()
+    headers = dict(request.headers)
+    return await forward_and_reflect(path, body, headers)
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=5050)
