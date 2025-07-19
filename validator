@@ -1,0 +1,11 @@
+import httpx
+from validator import compare_payloads
+from settings import PRIMARY_BASE, SECONDARY_BASE
+
+async def forward_and_reflect(path, body, headers):
+    async with httpx.AsyncClient() as client:
+        primary = await client.post(f"{PRIMARY_BASE}/{path}", content=body, headers=headers)
+        secondary = await client.post(f"{SECONDARY_BASE}/{path}", content=body, headers=headers)
+
+    compare_payloads(primary.text, secondary.text)
+    return primary
